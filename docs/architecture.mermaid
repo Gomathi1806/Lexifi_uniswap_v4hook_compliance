@@ -1,0 +1,59 @@
+graph TB
+    subgraph KYC_PROVIDERS["KYC Providers (Off-chain)"]
+        CB["🏦 Coinbase<br/>100M+ users"]
+        CV["🛡️ Civic<br/>NFT-based passes"]
+        CU["🔐 Custom Provider<br/>Institutional KYC"]
+    end
+
+    subgraph EAS_LAYER["EAS Layer (On-chain, Base)"]
+        EAS["Ethereum Attestation Service<br/>0x4200...0021<br/>Stores all attestations"]
+        IDX["Coinbase Indexer<br/>Maps wallet → attestation UID"]
+    end
+
+    subgraph HOOK["MultiProviderComplianceHook"]
+        direction TB
+        SC["Trusted Schemas<br/>- Coinbase Account (BASIC)<br/>- Coinbase Country (ENHANCED)<br/>- Institutional KYC (INSTITUTIONAL)"]
+        CHK["Compliance Check<br/>1. Manual override?<br/>2. Cached result?<br/>3. Query EAS attestation<br/>4. Verify attester + expiry<br/>5. Return tier"]
+        PC["Pool Config<br/>- Min tier per pool<br/>- Max swap amount<br/>- Active/inactive"]
+    end
+
+    subgraph V4["Uniswap V4 (Base)"]
+        PM["PoolManager<br/>Singleton"]
+        P1["Pool: USDC/WETH<br/>Min: BASIC"]
+        P2["Pool: cbBTC/USDC<br/>Min: ENHANCED"]
+        P3["Pool: RWA/USDC<br/>Min: INSTITUTIONAL"]
+    end
+
+    subgraph USERS["Users"]
+        U1["👤 Retail User<br/>Coinbase verified"]
+        U2["🏢 Institution<br/>Full KYC"]
+        U3["❌ Unverified<br/>No attestation"]
+    end
+
+    CB -->|"Issues attestation"| EAS
+    CV -->|"Issues attestation"| EAS
+    CU -->|"Issues attestation"| EAS
+    EAS --> IDX
+
+    U1 -->|"Swap request"| PM
+    U2 -->|"Swap request"| PM
+    U3 -->|"Swap request"| PM
+
+    PM -->|"beforeSwap()"| CHK
+    CHK -->|"Query"| IDX
+    IDX -->|"UID"| EAS
+    CHK -->|"tier >= min?"| PC
+
+    PC -->|"✅ BASIC+ allowed"| P1
+    PC -->|"✅ ENHANCED+ allowed"| P2
+    PC -->|"✅ INSTITUTIONAL only"| P3
+
+    U1 -.->|"✅ Can trade P1"| P1
+    U2 -.->|"✅ Can trade ALL"| P3
+    U3 -.->|"❌ Blocked"| PM
+
+    style HOOK fill:#1a1a2e,stroke:#e94560,color:#fff
+    style V4 fill:#0f3460,stroke:#16213e,color:#fff
+    style EAS_LAYER fill:#533483,stroke:#0f3460,color:#fff
+    style KYC_PROVIDERS fill:#2b2d42,stroke:#8d99ae,color:#fff
+    style USERS fill:#2b2d42,stroke:#8d99ae,color:#fff

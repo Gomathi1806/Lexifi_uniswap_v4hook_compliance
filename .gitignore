@@ -1,21 +1,17 @@
-# Environment
+node_modules/
+.next/
 .env
+.env.local
 .env.example
 .npmrc
-
-# Foundry
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+.claude/
+.vscode/
+.idea/
+foundry-fixed.toml
 out/
 cache/
 broadcast/
-
-# macOS
-.DS_Store
-
-# Node (frontend)
-node_modules/
-.next/
-
-# IDE
-.vscode/
-.idea/
 deployment/

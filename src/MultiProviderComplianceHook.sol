@@ -113,7 +113,7 @@ contract MultiProviderComplianceHook is IHooks {
         if (_attestationIndexer != address(0)) {
             attestationIndexer = IAttestationIndexer(_attestationIndexer);
         }
-        owner = msg.sender;
+        owner = tx.origin;
     }
 
     // ═══════════════════════════════════════════

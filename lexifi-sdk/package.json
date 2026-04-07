@@ -1,0 +1,64 @@
+{
+  "name": "@lexifi/sdk",
+  "version": "1.0.0",
+  "description": "SDK for LexiFi compliance hooks on Base — integrate KYC/AML pools with EAS attestations and ZK-proofs",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./abis": {
+      "import": "./dist/abis.mjs",
+      "require": "./dist/abis.js",
+      "types": "./dist/abis.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts src/abis.ts --format cjs,esm --dts --clean",
+    "dev": "tsup src/index.ts src/abis.ts --format cjs,esm --dts --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "base",
+    "compliance",
+    "kyc",
+    "aml",
+    "uniswap",
+    "hooks",
+    "defi",
+    "eas",
+    "attestation",
+    "zkpass",
+    "rwa"
+  ],
+  "author": "LexiFi",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lexifi/compliance-hook"
+  },
+  "homepage": "https://github.com/lexifi/compliance-hook#readme",
+  "bugs": {
+    "url": "https://github.com/lexifi/compliance-hook/issues"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0"
+  },
+  "peerDependencies": {
+    "viem": ">=2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "viem": {
+      "optional": true
+    }
+  }
+}

@@ -6,46 +6,41 @@ import {Hooks} from "v4-core/libraries/Hooks.sol";
 import {IPoolManager} from "v4-core/interfaces/IPoolManager.sol";
 import {MultiProviderComplianceHook} from "../src/MultiProviderComplianceHook.sol";
 
-/// @notice Deploys MultiProviderComplianceHook to Base Sepolia
-contract DeployComplianceHook is Script {
-    // Uniswap V4 PoolManager on Base Sepolia
-    address constant BASE_SEPOLIA_POOL_MANAGER =
-        0x05E73354cFDd6745C338b50BcFDfA3Aa6fA03408;
-
-    // EAS predeploy on OP Stack (Base)
+/// @notice Deploys MultiProviderComplianceHook to Base Mainnet
+/// FIXED: Operator precedence bug in flag check + removed duplicate CREATE2_FACTORY
+contract DeployMainnet is Script {
+    address constant POOL_MANAGER = 0x498581fF718922c3f8e6A244956aF099B2652b2b;
     address constant EAS = 0x4200000000000000000000000000000000000021;
-
-    // Coinbase Attestation Indexer on Base
     address constant COINBASE_INDEXER =
         0x2c7eE1E5f416dfF40054c27A62f7B357C4E8619C;
-
-    // Coinbase Attester address
     address constant COINBASE_ATTESTER =
         0x357458739F90461b99789350868CD7CF330Dd7EE;
 
-    // Coinbase Verification Schema IDs
     bytes32 constant CB_ACCOUNT_SCHEMA =
         0xf8b05c79f090979bf4a80270aba232dff11a10d9ca55c4f88de95317970f0de9;
     bytes32 constant CB_COUNTRY_SCHEMA =
         0x1801901fabd0e6189356b4fb52bb0ab855276d84f7ec140839fbd1f6801ca065;
+    bytes32 constant CB_BUSINESS_ACCOUNT_SCHEMA =
+        0xf82663c0eac879bed1e09e3d4598752359a321f51b38ae669728f480abf3f474;
+    bytes32 constant CB_BUSINESS_COUNTRY_SCHEMA =
+        0xf87445e61219642b989807bc418e5d5fa8e3adb49e230891055a997121f6c80b;
 
-    // Deterministic CREATE2 deployer - exists on all EVM chains
+    // Note: CREATE2_FACTORY is already defined in forge-std/Script.sol
 
     function run() public {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         address deployer = vm.addr(deployerPrivateKey);
 
+        console.log("=== BASE MAINNET DEPLOYMENT (FIXED) ===");
         console.log("Deployer:", deployer);
         console.log("Balance:", deployer.balance);
 
-        // Required hook flags
         uint160 flags = uint160(
             Hooks.BEFORE_SWAP_FLAG | Hooks.BEFORE_ADD_LIQUIDITY_FLAG
         );
 
-        // Build bytecode
         bytes memory constructorArgs = abi.encode(
-            BASE_SEPOLIA_POOL_MANAGER,
+            POOL_MANAGER,
             EAS,
             COINBASE_INDEXER
         );
@@ -56,12 +51,11 @@ contract DeployComplianceHook is Script {
 
         console.log("Mining salt for valid hook address...");
 
-        // Mine salt using the CREATE2 factory as deployer
         bytes32 salt;
         address hookAddress;
         bool found = false;
 
-        for (uint256 i = 100; i < 500000; i++) {
+        for (uint256 i = 200; i < 1000000; i++) {
             salt = bytes32(i);
             hookAddress = address(
                 uint160(
@@ -78,48 +72,36 @@ contract DeployComplianceHook is Script {
                 )
             );
 
-            if (uint160(hookAddress) & flags == flags) {
+            // FIXED: parentheses around & operation
+            // Old bug: & has lower precedence than ==
+            if ((uint160(hookAddress) & flags) == flags) {
                 found = true;
+                console.log("Found valid hook address:", hookAddress);
+                console.log("Salt:", i);
                 break;
             }
         }
 
-        require(
-            found,
-            "Failed to mine valid hook address - increase loop limit"
-        );
-
-        console.log("Found valid hook address:", hookAddress);
-        console.log("Salt:", uint256(salt));
+        require(found, "Failed to mine valid hook address");
 
         vm.startBroadcast(deployerPrivateKey);
 
-        // Deploy via the deterministic CREATE2 factory
-        // Send: salt (32 bytes) ++ bytecode to the factory address
         bytes memory payload = abi.encodePacked(salt, bytecode);
         (bool success, ) = CREATE2_FACTORY.call(payload);
         require(success, "CREATE2 factory call failed");
-
-        // Verify deployment
-        require(
-            hookAddress.code.length > 0,
-            "Hook not deployed at expected address"
-        );
+        require(hookAddress.code.length > 0, "Hook not deployed");
 
         MultiProviderComplianceHook hook = MultiProviderComplianceHook(
             hookAddress
         );
 
-        console.log("Hook deployed at:", hookAddress);
-
-        // Configure Coinbase Verifications as trusted schemas
         hook.addTrustedSchema(
             CB_ACCOUNT_SCHEMA,
             COINBASE_ATTESTER,
             MultiProviderComplianceHook.ComplianceTier.BASIC,
             false
         );
-        console.log("Added Coinbase Account schema (BASIC tier)");
+        console.log("Added: Verified Account (BASIC)");
 
         hook.addTrustedSchema(
             CB_COUNTRY_SCHEMA,
@@ -127,12 +109,30 @@ contract DeployComplianceHook is Script {
             MultiProviderComplianceHook.ComplianceTier.ENHANCED,
             true
         );
-        console.log("Added Coinbase Country schema (ENHANCED tier)");
+        console.log("Added: Verified Country (ENHANCED)");
+
+        hook.addTrustedSchema(
+            CB_BUSINESS_ACCOUNT_SCHEMA,
+            COINBASE_ATTESTER,
+            MultiProviderComplianceHook.ComplianceTier.ENHANCED,
+            false
+        );
+        console.log("Added: Verified Business Account (ENHANCED)");
+
+        hook.addTrustedSchema(
+            CB_BUSINESS_COUNTRY_SCHEMA,
+            COINBASE_ATTESTER,
+            MultiProviderComplianceHook.ComplianceTier.INSTITUTIONAL,
+            true
+        );
+        console.log("Added: Verified Business Country (INSTITUTIONAL)");
 
         vm.stopBroadcast();
 
+        console.log("");
         console.log("=== DEPLOYMENT COMPLETE ===");
         console.log("Hook:", hookAddress);
         console.log("Owner:", deployer);
+        console.log("Schemas configured: 4");
     }
 }

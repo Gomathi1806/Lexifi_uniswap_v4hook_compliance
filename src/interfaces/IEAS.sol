@@ -10,14 +10,18 @@ struct Attestation {
     uint64 expirationTime;
     uint64 revocationTime;
     bytes32 refUID;
-    address attester;
     address recipient;
+    address attester;
     bool revocable;
     bytes data;
 }
 
 interface IEAS {
-    function getAttestation(bytes32 uid) external view returns (Attestation memory);
+    function getAttestation(
+        bytes32 uid
+    ) external view returns (Attestation memory);
+
     function isAttestationValid(bytes32 uid) external view returns (bool);
+
     function getTimestamp(bytes32 data) external view returns (uint64);
 }

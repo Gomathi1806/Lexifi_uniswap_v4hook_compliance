@@ -1,5 +1,7 @@
 # Environment
 .env
+.env.example
+.npmrc
 
 # Foundry
 out/

@@ -3,7 +3,7 @@
 import { useAccount, useChainId, useReadContract } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { HOOK_ABI, PROVIDER_ABI } from "@/config/abi";
-import { getDeployment, DEPLOYMENTS, TIERS, POLICIES } from "@/config/contracts";
+import { getDeployment, TIERS, POLICIES } from "@/config/contracts";
 import Link from "next/link";
 
 export default function Home() {

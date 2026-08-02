@@ -10,6 +10,7 @@ import { getDeployment } from "@/config/contracts";
 const NAV = [
   { href: "/", label: "Overview", icon: "◈" },
   { href: "/pools", label: "Pools", icon: "◉" },
+  { href: "/audit", label: "Audit Trail", icon: "◫" },
   { href: "/checker", label: "Checker", icon: "⊘" },
   { href: "/settings", label: "Settings", icon: "⚙" },
 ];

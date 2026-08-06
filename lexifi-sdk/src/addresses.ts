@@ -14,9 +14,9 @@ export interface LexifiDeployment {
 export const base: LexifiDeployment = {
   chainId: 8453,
   hook: "0xfE92DE69d2dDdcAc2f864C4cF84e8aD5E17D2880",
-  coinbaseProvider: "0xb5DEC225A104A276671A765abA3890Ec88a2Ca27",
-  thresholdPolicy: "0x75f4913F53b694fDda95E49456d163ca7AEF4199",
-  regionalPolicy: "0xa99A89CD5A61e975fb11047d3ed455fCcaD9A44f",
+  coinbaseProvider: "0xb5DEC225A104A276671A765aba3890EC88A2ca27",
+  thresholdPolicy: "0x75f4913F53B694fDda95E49456D163Ca7AEf4199",
+  regionalPolicy: "0xA99A89Cd5A61e975fB11047D3ed455fCCad9A44F",
   institutionalPolicy: "0xaD09fc63080736b1dFC4048F3589C481225db5fb",
   selfAttestationProvider: "0x344E4917360F5b44680D097c5E4904Ac62c00483",
   poolManager: "0x498581fF718922c3f8e6A244956aF099B2652b2b",

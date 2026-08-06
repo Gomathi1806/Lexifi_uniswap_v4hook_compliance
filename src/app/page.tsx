@@ -61,6 +61,7 @@ export default function Home() {
           <AddrRow label="ThresholdPolicy" addr={d.thresholdPolicy} explorer={d.explorer} />
           <AddrRow label="RegionalPolicy" addr={d.regionalPolicy} explorer={d.explorer} />
           <AddrRow label="InstitutionalPolicy" addr={d.institutionalPolicy} explorer={d.explorer} />
+          <AddrRow label="SelfAttestationProvider" addr={d.selfAttestationProvider} explorer={d.explorer} />
           <AddrRow label="PoolManager" addr={d.poolManager} explorer={d.explorer} />
         </div>
       </div>

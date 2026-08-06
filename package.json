@@ -10,7 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@lexifi/sdk": "file:../lexifi-sdk",
+    "@lexifi/sdk": "file:./lexifi-sdk",
     "@rainbow-me/rainbowkit": "^2.2.0",
     "@tanstack/react-query": "^5.62.0",
     "next": "^14.2.15",

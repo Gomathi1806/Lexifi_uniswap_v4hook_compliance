@@ -179,9 +179,9 @@ export default function CheckerPage() {
 }
 
 function ProviderCard({ label, data, color }: { label: string; data: any; color: string }) {
-  const verified = data ? data[0] : null;
-  const tier = data ? Number(data[1]) : null;
-  const providerName = data ? data[4] : null;
+  const verified = data ? (data.verified ?? data[0] ?? null) : null;
+  const tier = data ? Number(data.tier ?? data[1] ?? NaN) : null;
+  const providerName = data ? (data.providerName ?? data[4] ?? null) : null;
 
   return (
     <div className="rounded-lg border border-white/[0.04] bg-base-0 p-4">
@@ -197,7 +197,7 @@ function ProviderCard({ label, data, color }: { label: string; data: any; color:
           <div>
             <div className="text-[10px] uppercase tracking-widest text-slate-600">Tier</div>
             <div className="mt-1 font-mono text-lg font-bold" style={{ color: TIERS[tier!]?.color }}>
-              {tier}
+              {tier != null && !isNaN(tier) ? TIERS[tier]?.name ?? tier : "–"}
             </div>
           </div>
           <div>

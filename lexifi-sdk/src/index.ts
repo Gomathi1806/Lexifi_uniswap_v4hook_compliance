@@ -5,6 +5,9 @@ export {
   InstitutionalPolicyAbi,
   VerificationProviderAbi,
   SelfAttestationProviderAbi,
+  LexifiComplianceAdapterAbi,
+  LexifiAllowlistCheckerAbi,
+  PermissionFlags,
   EventTopics,
 } from "./abis.js";
 
@@ -12,6 +15,7 @@ export {
   base,
   baseSepolia,
   getDeployment,
+  NOT_DEPLOYED,
   type LexifiDeployment,
 } from "./addresses.js";
 

@@ -15,3 +15,4 @@ out/
 cache/
 broadcast/
 deployment/
+.vercel

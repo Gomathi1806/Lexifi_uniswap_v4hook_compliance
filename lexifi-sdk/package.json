@@ -1,7 +1,7 @@
 {
   "name": "@lexifi/sdk",
-  "version": "0.1.0",
-  "description": "TypeScript SDK for Lexifi — pool-level compliance infrastructure for Uniswap V4",
+  "version": "0.2.0",
+  "description": "TypeScript SDK for Lexifi \u2014 pool-level compliance infrastructure for Uniswap V4",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,12 +11,23 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist", "src"],
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "npm run build"
   },
-  "keywords": ["lexifi", "uniswap", "v4", "compliance", "hook", "defi", "kyc"],
+  "keywords": [
+    "lexifi",
+    "uniswap",
+    "v4",
+    "compliance",
+    "hook",
+    "defi",
+    "kyc"
+  ],
   "author": "Lexifi",
   "license": "MIT",
   "peerDependencies": {

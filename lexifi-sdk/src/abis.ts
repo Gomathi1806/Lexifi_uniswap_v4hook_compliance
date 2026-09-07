@@ -83,6 +83,52 @@ export const SelfAttestationProviderAbi = [
   { type: "error", name: "ZeroAddress", inputs: [] },
 ] as const;
 
+/** Single-call compliance check for third-party hooks (Aqua0 V4Adapter and friends). */
+export const LexifiComplianceAdapterAbi = [
+  { type: "function", name: "checkCompliance", inputs: [{ name: "poolId", type: "bytes32" },{ name: "user", type: "address" },{ name: "operation", type: "uint8" },{ name: "amount", type: "uint256" }], outputs: [{ name: "allowed", type: "bool" },{ name: "userTier", type: "uint8" },{ name: "requiredTier", type: "uint8" },{ name: "reason", type: "string" }], stateMutability: "view" },
+  { type: "function", name: "hasPolicy", inputs: [{ name: "poolId", type: "bytes32" }], outputs: [{ type: "bool" }], stateMutability: "view" },
+  { type: "function", name: "lexifiHook", inputs: [], outputs: [{ type: "address" }], stateMutability: "view" },
+] as const;
+
+/**
+ * `IAllowlistChecker` for Uniswap v4 Permissioned Pools.
+ * `checkAllowlist` returns bytes2 permission flags: SWAP_ALLOWED 0x0001, LIQUIDITY_ALLOWED
+ * 0x0002. Uniswap's PermissionsAdapter tests them as `(flags & permission) == permission`.
+ * Prefer `previewPermissions` in UI — it returns the denial reason the flags discard.
+ */
+export const LexifiAllowlistCheckerAbi = [
+  { type: "function", name: "checkAllowlist", inputs: [{ name: "account", type: "address" },{ name: "tokenAddress", type: "address" }], outputs: [{ type: "bytes2" }], stateMutability: "view" },
+  { type: "function", name: "previewPermissions", inputs: [{ name: "account", type: "address" },{ name: "tokenAddress", type: "address" }], outputs: [{ name: "swapAllowed", type: "bool" },{ name: "liquidityAllowed", type: "bool" },{ name: "userTier", type: "uint8" },{ name: "requiredSwapTier", type: "uint8" },{ name: "reason", type: "string" }], stateMutability: "view" },
+  { type: "function", name: "isTokenGoverned", inputs: [{ name: "tokenAddress", type: "address" }], outputs: [{ type: "bool" }], stateMutability: "view" },
+  { type: "function", name: "bindings", inputs: [{ name: "", type: "address" }], outputs: [{ name: "poolId", type: "bytes32" },{ name: "evaluationAmount", type: "uint256" },{ name: "liquidityRequiresSwap", type: "bool" },{ name: "active", type: "bool" }], stateMutability: "view" },
+  { type: "function", name: "compliance", inputs: [], outputs: [{ type: "address" }], stateMutability: "view" },
+  { type: "function", name: "owner", inputs: [], outputs: [{ type: "address" }], stateMutability: "view" },
+  { type: "function", name: "paused", inputs: [], outputs: [{ type: "bool" }], stateMutability: "view" },
+  { type: "function", name: "supportsInterface", inputs: [{ name: "interfaceId", type: "bytes4" }], outputs: [{ type: "bool" }], stateMutability: "view" },
+  { type: "function", name: "bindToken", inputs: [{ name: "token", type: "address" },{ name: "poolId", type: "bytes32" },{ name: "evaluationAmount", type: "uint256" },{ name: "liquidityRequiresSwap", type: "bool" }], outputs: [], stateMutability: "nonpayable" },
+  { type: "function", name: "unbindToken", inputs: [{ name: "token", type: "address" }], outputs: [], stateMutability: "nonpayable" },
+  { type: "function", name: "setEvaluationAmount", inputs: [{ name: "token", type: "address" },{ name: "newAmount", type: "uint256" }], outputs: [], stateMutability: "nonpayable" },
+  { type: "function", name: "setPaused", inputs: [{ name: "_paused", type: "bool" }], outputs: [], stateMutability: "nonpayable" },
+  { type: "function", name: "transferOwnership", inputs: [{ name: "newOwner", type: "address" }], outputs: [], stateMutability: "nonpayable" },
+  { type: "event", name: "TokenBound", inputs: [{ name: "token", type: "address", indexed: true },{ name: "poolId", type: "bytes32", indexed: true },{ name: "evaluationAmount", type: "uint256", indexed: false },{ name: "liquidityRequiresSwap", type: "bool", indexed: false }] },
+  { type: "event", name: "TokenUnbound", inputs: [{ name: "token", type: "address", indexed: true }] },
+  { type: "event", name: "EvaluationAmountUpdated", inputs: [{ name: "token", type: "address", indexed: true },{ name: "oldAmount", type: "uint256", indexed: false },{ name: "newAmount", type: "uint256", indexed: false }] },
+  { type: "event", name: "PausedSet", inputs: [{ name: "paused", type: "bool", indexed: false }] },
+  { type: "event", name: "OwnershipTransferred", inputs: [{ name: "previousOwner", type: "address", indexed: true },{ name: "newOwner", type: "address", indexed: true }] },
+  { type: "error", name: "OnlyOwner", inputs: [] },
+  { type: "error", name: "ZeroAddress", inputs: [] },
+  { type: "error", name: "TokenNotBound", inputs: [{ name: "token", type: "address" }] },
+  { type: "error", name: "ZeroEvaluationAmount", inputs: [] },
+] as const;
+
+/** Uniswap v4 Permissioned Pools permission flags (bytes2), from PermissionFlags.sol. */
+export const PermissionFlags = {
+  NONE: "0x0000",
+  SWAP_ALLOWED: "0x0001",
+  LIQUIDITY_ALLOWED: "0x0002",
+  ALL_ALLOWED: "0xffff",
+} as const;
+
 export const EventTopics = {
   ComplianceCheckPassed: "0x175e4a816ea96f239cfe049470f5f6177b6875247a835208c43fb2c7f54f7a4f",
   ComplianceCheckFailed: "0x26217f4ddf912008a58466c93222a8b3834fd80c89af3868a837d2390d93df04",

@@ -898,6 +898,319 @@ export declare const SelfAttestationProviderAbi: readonly [{
     readonly name: "ZeroAddress";
     readonly inputs: readonly [];
 }];
+/** Single-call compliance check for third-party hooks (Aqua0 V4Adapter and friends). */
+export declare const LexifiComplianceAdapterAbi: readonly [{
+    readonly type: "function";
+    readonly name: "checkCompliance";
+    readonly inputs: readonly [{
+        readonly name: "poolId";
+        readonly type: "bytes32";
+    }, {
+        readonly name: "user";
+        readonly type: "address";
+    }, {
+        readonly name: "operation";
+        readonly type: "uint8";
+    }, {
+        readonly name: "amount";
+        readonly type: "uint256";
+    }];
+    readonly outputs: readonly [{
+        readonly name: "allowed";
+        readonly type: "bool";
+    }, {
+        readonly name: "userTier";
+        readonly type: "uint8";
+    }, {
+        readonly name: "requiredTier";
+        readonly type: "uint8";
+    }, {
+        readonly name: "reason";
+        readonly type: "string";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "hasPolicy";
+    readonly inputs: readonly [{
+        readonly name: "poolId";
+        readonly type: "bytes32";
+    }];
+    readonly outputs: readonly [{
+        readonly type: "bool";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "lexifiHook";
+    readonly inputs: readonly [];
+    readonly outputs: readonly [{
+        readonly type: "address";
+    }];
+    readonly stateMutability: "view";
+}];
+/**
+ * `IAllowlistChecker` for Uniswap v4 Permissioned Pools.
+ * `checkAllowlist` returns bytes2 permission flags: SWAP_ALLOWED 0x0001, LIQUIDITY_ALLOWED
+ * 0x0002. Uniswap's PermissionsAdapter tests them as `(flags & permission) == permission`.
+ * Prefer `previewPermissions` in UI — it returns the denial reason the flags discard.
+ */
+export declare const LexifiAllowlistCheckerAbi: readonly [{
+    readonly type: "function";
+    readonly name: "checkAllowlist";
+    readonly inputs: readonly [{
+        readonly name: "account";
+        readonly type: "address";
+    }, {
+        readonly name: "tokenAddress";
+        readonly type: "address";
+    }];
+    readonly outputs: readonly [{
+        readonly type: "bytes2";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "previewPermissions";
+    readonly inputs: readonly [{
+        readonly name: "account";
+        readonly type: "address";
+    }, {
+        readonly name: "tokenAddress";
+        readonly type: "address";
+    }];
+    readonly outputs: readonly [{
+        readonly name: "swapAllowed";
+        readonly type: "bool";
+    }, {
+        readonly name: "liquidityAllowed";
+        readonly type: "bool";
+    }, {
+        readonly name: "userTier";
+        readonly type: "uint8";
+    }, {
+        readonly name: "requiredSwapTier";
+        readonly type: "uint8";
+    }, {
+        readonly name: "reason";
+        readonly type: "string";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "isTokenGoverned";
+    readonly inputs: readonly [{
+        readonly name: "tokenAddress";
+        readonly type: "address";
+    }];
+    readonly outputs: readonly [{
+        readonly type: "bool";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "bindings";
+    readonly inputs: readonly [{
+        readonly name: "";
+        readonly type: "address";
+    }];
+    readonly outputs: readonly [{
+        readonly name: "poolId";
+        readonly type: "bytes32";
+    }, {
+        readonly name: "evaluationAmount";
+        readonly type: "uint256";
+    }, {
+        readonly name: "liquidityRequiresSwap";
+        readonly type: "bool";
+    }, {
+        readonly name: "active";
+        readonly type: "bool";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "compliance";
+    readonly inputs: readonly [];
+    readonly outputs: readonly [{
+        readonly type: "address";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "owner";
+    readonly inputs: readonly [];
+    readonly outputs: readonly [{
+        readonly type: "address";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "paused";
+    readonly inputs: readonly [];
+    readonly outputs: readonly [{
+        readonly type: "bool";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "supportsInterface";
+    readonly inputs: readonly [{
+        readonly name: "interfaceId";
+        readonly type: "bytes4";
+    }];
+    readonly outputs: readonly [{
+        readonly type: "bool";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "bindToken";
+    readonly inputs: readonly [{
+        readonly name: "token";
+        readonly type: "address";
+    }, {
+        readonly name: "poolId";
+        readonly type: "bytes32";
+    }, {
+        readonly name: "evaluationAmount";
+        readonly type: "uint256";
+    }, {
+        readonly name: "liquidityRequiresSwap";
+        readonly type: "bool";
+    }];
+    readonly outputs: readonly [];
+    readonly stateMutability: "nonpayable";
+}, {
+    readonly type: "function";
+    readonly name: "unbindToken";
+    readonly inputs: readonly [{
+        readonly name: "token";
+        readonly type: "address";
+    }];
+    readonly outputs: readonly [];
+    readonly stateMutability: "nonpayable";
+}, {
+    readonly type: "function";
+    readonly name: "setEvaluationAmount";
+    readonly inputs: readonly [{
+        readonly name: "token";
+        readonly type: "address";
+    }, {
+        readonly name: "newAmount";
+        readonly type: "uint256";
+    }];
+    readonly outputs: readonly [];
+    readonly stateMutability: "nonpayable";
+}, {
+    readonly type: "function";
+    readonly name: "setPaused";
+    readonly inputs: readonly [{
+        readonly name: "_paused";
+        readonly type: "bool";
+    }];
+    readonly outputs: readonly [];
+    readonly stateMutability: "nonpayable";
+}, {
+    readonly type: "function";
+    readonly name: "transferOwnership";
+    readonly inputs: readonly [{
+        readonly name: "newOwner";
+        readonly type: "address";
+    }];
+    readonly outputs: readonly [];
+    readonly stateMutability: "nonpayable";
+}, {
+    readonly type: "event";
+    readonly name: "TokenBound";
+    readonly inputs: readonly [{
+        readonly name: "token";
+        readonly type: "address";
+        readonly indexed: true;
+    }, {
+        readonly name: "poolId";
+        readonly type: "bytes32";
+        readonly indexed: true;
+    }, {
+        readonly name: "evaluationAmount";
+        readonly type: "uint256";
+        readonly indexed: false;
+    }, {
+        readonly name: "liquidityRequiresSwap";
+        readonly type: "bool";
+        readonly indexed: false;
+    }];
+}, {
+    readonly type: "event";
+    readonly name: "TokenUnbound";
+    readonly inputs: readonly [{
+        readonly name: "token";
+        readonly type: "address";
+        readonly indexed: true;
+    }];
+}, {
+    readonly type: "event";
+    readonly name: "EvaluationAmountUpdated";
+    readonly inputs: readonly [{
+        readonly name: "token";
+        readonly type: "address";
+        readonly indexed: true;
+    }, {
+        readonly name: "oldAmount";
+        readonly type: "uint256";
+        readonly indexed: false;
+    }, {
+        readonly name: "newAmount";
+        readonly type: "uint256";
+        readonly indexed: false;
+    }];
+}, {
+    readonly type: "event";
+    readonly name: "PausedSet";
+    readonly inputs: readonly [{
+        readonly name: "paused";
+        readonly type: "bool";
+        readonly indexed: false;
+    }];
+}, {
+    readonly type: "event";
+    readonly name: "OwnershipTransferred";
+    readonly inputs: readonly [{
+        readonly name: "previousOwner";
+        readonly type: "address";
+        readonly indexed: true;
+    }, {
+        readonly name: "newOwner";
+        readonly type: "address";
+        readonly indexed: true;
+    }];
+}, {
+    readonly type: "error";
+    readonly name: "OnlyOwner";
+    readonly inputs: readonly [];
+}, {
+    readonly type: "error";
+    readonly name: "ZeroAddress";
+    readonly inputs: readonly [];
+}, {
+    readonly type: "error";
+    readonly name: "TokenNotBound";
+    readonly inputs: readonly [{
+        readonly name: "token";
+        readonly type: "address";
+    }];
+}, {
+    readonly type: "error";
+    readonly name: "ZeroEvaluationAmount";
+    readonly inputs: readonly [];
+}];
+/** Uniswap v4 Permissioned Pools permission flags (bytes2), from PermissionFlags.sol. */
+export declare const PermissionFlags: {
+    readonly NONE: "0x0000";
+    readonly SWAP_ALLOWED: "0x0001";
+    readonly LIQUIDITY_ALLOWED: "0x0002";
+    readonly ALL_ALLOWED: "0xffff";
+};
 export declare const EventTopics: {
     readonly ComplianceCheckPassed: "0x175e4a816ea96f239cfe049470f5f6177b6875247a835208c43fb2c7f54f7a4f";
     readonly ComplianceCheckFailed: "0x26217f4ddf912008a58466c93222a8b3834fd80c89af3868a837d2390d93df04";

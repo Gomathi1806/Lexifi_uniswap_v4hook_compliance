@@ -34,3 +34,14 @@ export {
 } from "./types.js";
 
 export { fetchAuditTrail, type FetchAuditOptions } from "./audit.js";
+
+export {
+  LexifiPolicyConfigAbi,
+  RegionalPolicyV3Abi,
+  InstitutionalPolicyV3Abi,
+} from "./abis.js";
+export { ConfigFamily } from "./addresses.js";
+export {
+  encodeRegionalConfig,
+  encodeInstitutionalConfig,
+} from "./policyConfig.js";

@@ -3,6 +3,9 @@ export {
   baseSepolia,
   getDeployment,
   type LexifiDeployment,
+  ConfigFamily,
+  encodeRegionalConfig,
+  encodeInstitutionalConfig,
 } from "@lexifi/sdk";
 
 export const TIERS = [

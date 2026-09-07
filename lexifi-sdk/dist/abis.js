@@ -126,4 +126,51 @@ export const EventTopics = {
     PoolPolicySet: "0x0e165c569af9acc2de6dd8d2fbcabcb6a851688a45eeaeb6e225e33ab3704364",
     PoolPolicyUpdated: "0x33bfaeb08a37d7651827236e5cc752c57eaee6011f76723c463ca0fc82665ec0",
 };
+/**
+ * `LexifiPolicyConfig` — shared per-pool policy configuration store (deployed 2026-09-07).
+ *
+ * Config is keyed by `(family, poolId)`, where `family` is a constant a policy declares and
+ * keeps across logic versions. That is what makes a policy redeploy migration-free. The store
+ * holds opaque `bytes`; each policy family owns its own struct layout. Encode with
+ * `encodeRegionalConfig` / `encodeInstitutionalConfig`.
+ */
+export const LexifiPolicyConfigAbi = [
+    { type: "function", name: "setConfig", inputs: [{ name: "family", type: "bytes32" }, { name: "poolId", type: "bytes32" }, { name: "data", type: "bytes" }], outputs: [], stateMutability: "nonpayable" },
+    { type: "function", name: "setConfigBatch", inputs: [{ name: "family", type: "bytes32" }, { name: "poolIds", type: "bytes32[]" }, { name: "datas", type: "bytes[]" }], outputs: [], stateMutability: "nonpayable" },
+    { type: "function", name: "clearConfig", inputs: [{ name: "family", type: "bytes32" }, { name: "poolId", type: "bytes32" }], outputs: [], stateMutability: "nonpayable" },
+    { type: "function", name: "transferPoolAdmin", inputs: [{ name: "family", type: "bytes32" }, { name: "poolId", type: "bytes32" }, { name: "newAdmin", type: "address" }], outputs: [], stateMutability: "nonpayable" },
+    { type: "function", name: "getConfig", inputs: [{ name: "family", type: "bytes32" }, { name: "poolId", type: "bytes32" }], outputs: [{ type: "bytes" }], stateMutability: "view" },
+    { type: "function", name: "isConfigured", inputs: [{ name: "family", type: "bytes32" }, { name: "poolId", type: "bytes32" }], outputs: [{ type: "bool" }], stateMutability: "view" },
+    { type: "function", name: "poolAdmin", inputs: [{ name: "family", type: "bytes32" }, { name: "poolId", type: "bytes32" }], outputs: [{ type: "address" }], stateMutability: "view" },
+    { type: "event", name: "ConfigSet", inputs: [{ name: "family", type: "bytes32", indexed: true }, { name: "poolId", type: "bytes32", indexed: true }, { name: "admin", type: "address", indexed: true }, { name: "data", type: "bytes", indexed: false }] },
+    { type: "event", name: "ConfigCleared", inputs: [{ name: "family", type: "bytes32", indexed: true }, { name: "poolId", type: "bytes32", indexed: true }, { name: "admin", type: "address", indexed: true }] },
+];
+/**
+ * `RegionalPolicyV3`. Note there is NO `setRegionConfig` — writes go through
+ * `LexifiPolicyConfig.setConfig`. `effectiveConfig` returns the config AFTER normalisation
+ * (`minLp` is clamped up to `minSwap`), so it is what the policy actually enforces;
+ * `validateConfig` reports whether the stored value needed that clamp.
+ */
+export const RegionalPolicyV3Abi = [
+    { type: "function", name: "checkAccess", inputs: [{ name: "poolId", type: "bytes32" }, { name: "user", type: "address" }, { name: "operation", type: "uint8" }, { name: "amount", type: "uint256" }], outputs: [{ type: "uint8" }, { type: "string" }], stateMutability: "view" },
+    { type: "function", name: "minimumLevel", inputs: [{ name: "poolId", type: "bytes32" }, { name: "operation", type: "uint8" }], outputs: [{ type: "uint8" }], stateMutability: "view" },
+    { type: "function", name: "effectiveConfig", inputs: [{ name: "poolId", type: "bytes32" }], outputs: [{ type: "tuple", components: [{ name: "requireCountryAttestation", type: "bool" }, { name: "requireAccountAttestation", type: "bool" }, { name: "minimumSwapLevel", type: "uint8" }, { name: "minimumLpLevel", type: "uint8" }, { name: "active", type: "bool" }] }, { name: "configured", type: "bool" }], stateMutability: "view" },
+    { type: "function", name: "validateConfig", inputs: [{ name: "poolId", type: "bytes32" }], outputs: [{ type: "bool" }], stateMutability: "view" },
+    { type: "function", name: "encodeConfig", inputs: [{ name: "requireCountry", type: "bool" }, { name: "requireAccount", type: "bool" }, { name: "minSwap", type: "uint8" }, { name: "minLp", type: "uint8" }], outputs: [{ type: "bytes" }], stateMutability: "pure" },
+    { type: "function", name: "CONFIG_FAMILY", inputs: [], outputs: [{ type: "bytes32" }], stateMutability: "view" },
+    { type: "function", name: "configRegistry", inputs: [], outputs: [{ type: "address" }], stateMutability: "view" },
+    { type: "function", name: "policyName", inputs: [], outputs: [{ type: "string" }], stateMutability: "pure" },
+    { type: "function", name: "policyVersion", inputs: [], outputs: [{ type: "uint256" }], stateMutability: "pure" },
+];
+/** `InstitutionalPolicyV3`. Writes go through `LexifiPolicyConfig.setConfig`. */
+export const InstitutionalPolicyV3Abi = [
+    { type: "function", name: "checkAccess", inputs: [{ name: "poolId", type: "bytes32" }, { name: "user", type: "address" }, { name: "operation", type: "uint8" }, { name: "amount", type: "uint256" }], outputs: [{ type: "uint8" }, { type: "string" }], stateMutability: "view" },
+    { type: "function", name: "minimumLevel", inputs: [{ name: "poolId", type: "bytes32" }, { name: "operation", type: "uint8" }], outputs: [{ type: "uint8" }], stateMutability: "view" },
+    { type: "function", name: "effectiveConfig", inputs: [{ name: "poolId", type: "bytes32" }], outputs: [{ type: "tuple", components: [{ name: "requiredProviders", type: "address[]" }, { name: "minimumProviders", type: "uint256" }, { name: "minimumTier", type: "uint8" }, { name: "active", type: "bool" }] }, { name: "configured", type: "bool" }], stateMutability: "view" },
+    { type: "function", name: "encodeConfig", inputs: [{ name: "providers", type: "address[]" }, { name: "minProviders", type: "uint256" }, { name: "minTier", type: "uint8" }], outputs: [{ type: "bytes" }], stateMutability: "pure" },
+    { type: "function", name: "CONFIG_FAMILY", inputs: [], outputs: [{ type: "bytes32" }], stateMutability: "view" },
+    { type: "function", name: "configRegistry", inputs: [], outputs: [{ type: "address" }], stateMutability: "view" },
+    { type: "function", name: "policyName", inputs: [], outputs: [{ type: "string" }], stateMutability: "pure" },
+    { type: "function", name: "policyVersion", inputs: [], outputs: [{ type: "uint256" }], stateMutability: "pure" },
+];
 //# sourceMappingURL=abis.js.map

@@ -6,6 +6,9 @@ export {
   VerificationProviderAbi as PROVIDER_ABI,
   SelfAttestationProviderAbi as SELF_ATTESTATION_ABI,
   EventTopics,
+  LexifiPolicyConfigAbi as POLICY_CONFIG_ABI,
+  RegionalPolicyV3Abi as REGIONAL_POLICY_V3_ABI,
+  InstitutionalPolicyV3Abi as INSTITUTIONAL_POLICY_V3_ABI,
 } from "@lexifi/sdk";
 
 export const COMPLIANCE_PASSED_TOPIC = "0x175e4a816ea96f239cfe049470f5f6177b6875247a835208c43fb2c7f54f7a4f" as const;

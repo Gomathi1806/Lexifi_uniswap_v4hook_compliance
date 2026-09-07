@@ -5,11 +5,17 @@ export const base = {
     hook: "0xfE92DE69d2dDdcAc2f864C4cF84e8aD5E17D2880",
     coinbaseProvider: "0xb5DEC225A104A276671A765aba3890EC88A2ca27",
     thresholdPolicy: "0x75f4913F53B694fDda95E49456D163Ca7AEf4199",
-    regionalPolicy: "0xA99A89Cd5A61e975fB11047D3ed455fCCad9A44F",
-    institutionalPolicy: "0xaD09fc63080736b1dFC4048F3589C481225db5fb",
+    // v3 (2026-09-07): registry-backed config, fail-closed on unconfigured pools, and all three
+    // policy audit findings fixed. Superseded v1 `0xA99A89Cd5A61e975fB11047D3ed455fCCad9A44F`
+    // and `0xaD09fc63080736b1dFC4048F3589C481225db5fb`, which remain on-chain but must not be
+    // used: RegionalPolicy v1's requirement flags did not deny, and InstitutionalPolicy v1's
+    // N-of-M quorum did not gate.
+    regionalPolicy: "0x5309C741094e8901f9D2Ad1f31DC560006542a82",
+    institutionalPolicy: "0xdA93C63212CF41dB3680319B3839f254aC319177",
     selfAttestationProvider: "0x344E4917360F5b44680D097c5E4904Ac62c00483",
     complianceAdapter: "0xe59fB4347Ca17aA94BBd62eBb9921877b06B68eE",
     allowlistChecker: "0x3882cD541634b99DabB5443Dc0DC67Ba4eDe94bc",
+    policyConfig: "0x9E005c201AEe5Db3c67b3658Cc18723dfDEe42E1",
     poolManager: "0x498581fF718922c3f8e6A244956aF099B2652b2b",
     explorer: "https://basescan.org",
     blockscoutApi: "https://base.blockscout.com/api/v2",
@@ -24,6 +30,7 @@ export const baseSepolia = {
     selfAttestationProvider: NOT_DEPLOYED,
     complianceAdapter: NOT_DEPLOYED,
     allowlistChecker: NOT_DEPLOYED,
+    policyConfig: NOT_DEPLOYED,
     poolManager: "0x05E73354cFDd6745C338b50BDB65F6c2F4163313",
     explorer: "https://sepolia.basescan.org",
     blockscoutApi: "https://base-sepolia.blockscout.com/api/v2",
@@ -33,4 +40,13 @@ export function getDeployment(chainId) {
         return baseSepolia;
     return base;
 }
+/**
+ * Config-family keys for `LexifiPolicyConfig`. These are `keccak256` of a fixed string and are
+ * deliberately CONSTANT across policy logic versions — that is what lets a redeployed policy
+ * keep reading the same configuration. Never derive these from a policy address.
+ */
+export const ConfigFamily = {
+    regional: "0x0e537700722790c80ce19afbec569da734cc6d5cbda34c936176091f1632b6cd",
+    institutional: "0x454961dc0ef2f1fce0aba990c49dbeba12441aada1ba4ff9476a7da4a71b75d8",
+};
 //# sourceMappingURL=addresses.js.map

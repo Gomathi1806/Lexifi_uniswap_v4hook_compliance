@@ -21,6 +21,13 @@ export interface LexifiDeployment {
      * available on this path — use the hook directly for pools that need either.
      */
     allowlistChecker: `0x${string}`;
+    /**
+     * Shared per-pool policy configuration store. Config is keyed by
+     * `(CONFIG_FAMILY, poolId)` rather than by policy address, so redeploying policy logic no
+     * longer loses configuration. `regionalPolicy` and `institutionalPolicy` (v3) read from it;
+     * `thresholdPolicy` still keeps its own storage.
+     */
+    policyConfig: `0x${string}`;
     poolManager: `0x${string}`;
     explorer: string;
     blockscoutApi: string;
@@ -30,4 +37,13 @@ export declare const NOT_DEPLOYED: "0x0000000000000000000000000000000000000000";
 export declare const base: LexifiDeployment;
 export declare const baseSepolia: LexifiDeployment;
 export declare function getDeployment(chainId: number): LexifiDeployment;
+/**
+ * Config-family keys for `LexifiPolicyConfig`. These are `keccak256` of a fixed string and are
+ * deliberately CONSTANT across policy logic versions — that is what lets a redeployed policy
+ * keep reading the same configuration. Never derive these from a policy address.
+ */
+export declare const ConfigFamily: {
+    readonly regional: "0x0e537700722790c80ce19afbec569da734cc6d5cbda34c936176091f1632b6cd";
+    readonly institutional: "0x454961dc0ef2f1fce0aba990c49dbeba12441aada1ba4ff9476a7da4a71b75d8";
+};
 //# sourceMappingURL=addresses.d.ts.map

@@ -1217,4 +1217,398 @@ export declare const EventTopics: {
     readonly PoolPolicySet: "0x0e165c569af9acc2de6dd8d2fbcabcb6a851688a45eeaeb6e225e33ab3704364";
     readonly PoolPolicyUpdated: "0x33bfaeb08a37d7651827236e5cc752c57eaee6011f76723c463ca0fc82665ec0";
 };
+/**
+ * `LexifiPolicyConfig` — shared per-pool policy configuration store (deployed 2026-09-07).
+ *
+ * Config is keyed by `(family, poolId)`, where `family` is a constant a policy declares and
+ * keeps across logic versions. That is what makes a policy redeploy migration-free. The store
+ * holds opaque `bytes`; each policy family owns its own struct layout. Encode with
+ * `encodeRegionalConfig` / `encodeInstitutionalConfig`.
+ */
+export declare const LexifiPolicyConfigAbi: readonly [{
+    readonly type: "function";
+    readonly name: "setConfig";
+    readonly inputs: readonly [{
+        readonly name: "family";
+        readonly type: "bytes32";
+    }, {
+        readonly name: "poolId";
+        readonly type: "bytes32";
+    }, {
+        readonly name: "data";
+        readonly type: "bytes";
+    }];
+    readonly outputs: readonly [];
+    readonly stateMutability: "nonpayable";
+}, {
+    readonly type: "function";
+    readonly name: "setConfigBatch";
+    readonly inputs: readonly [{
+        readonly name: "family";
+        readonly type: "bytes32";
+    }, {
+        readonly name: "poolIds";
+        readonly type: "bytes32[]";
+    }, {
+        readonly name: "datas";
+        readonly type: "bytes[]";
+    }];
+    readonly outputs: readonly [];
+    readonly stateMutability: "nonpayable";
+}, {
+    readonly type: "function";
+    readonly name: "clearConfig";
+    readonly inputs: readonly [{
+        readonly name: "family";
+        readonly type: "bytes32";
+    }, {
+        readonly name: "poolId";
+        readonly type: "bytes32";
+    }];
+    readonly outputs: readonly [];
+    readonly stateMutability: "nonpayable";
+}, {
+    readonly type: "function";
+    readonly name: "transferPoolAdmin";
+    readonly inputs: readonly [{
+        readonly name: "family";
+        readonly type: "bytes32";
+    }, {
+        readonly name: "poolId";
+        readonly type: "bytes32";
+    }, {
+        readonly name: "newAdmin";
+        readonly type: "address";
+    }];
+    readonly outputs: readonly [];
+    readonly stateMutability: "nonpayable";
+}, {
+    readonly type: "function";
+    readonly name: "getConfig";
+    readonly inputs: readonly [{
+        readonly name: "family";
+        readonly type: "bytes32";
+    }, {
+        readonly name: "poolId";
+        readonly type: "bytes32";
+    }];
+    readonly outputs: readonly [{
+        readonly type: "bytes";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "isConfigured";
+    readonly inputs: readonly [{
+        readonly name: "family";
+        readonly type: "bytes32";
+    }, {
+        readonly name: "poolId";
+        readonly type: "bytes32";
+    }];
+    readonly outputs: readonly [{
+        readonly type: "bool";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "poolAdmin";
+    readonly inputs: readonly [{
+        readonly name: "family";
+        readonly type: "bytes32";
+    }, {
+        readonly name: "poolId";
+        readonly type: "bytes32";
+    }];
+    readonly outputs: readonly [{
+        readonly type: "address";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "event";
+    readonly name: "ConfigSet";
+    readonly inputs: readonly [{
+        readonly name: "family";
+        readonly type: "bytes32";
+        readonly indexed: true;
+    }, {
+        readonly name: "poolId";
+        readonly type: "bytes32";
+        readonly indexed: true;
+    }, {
+        readonly name: "admin";
+        readonly type: "address";
+        readonly indexed: true;
+    }, {
+        readonly name: "data";
+        readonly type: "bytes";
+        readonly indexed: false;
+    }];
+}, {
+    readonly type: "event";
+    readonly name: "ConfigCleared";
+    readonly inputs: readonly [{
+        readonly name: "family";
+        readonly type: "bytes32";
+        readonly indexed: true;
+    }, {
+        readonly name: "poolId";
+        readonly type: "bytes32";
+        readonly indexed: true;
+    }, {
+        readonly name: "admin";
+        readonly type: "address";
+        readonly indexed: true;
+    }];
+}];
+/**
+ * `RegionalPolicyV3`. Note there is NO `setRegionConfig` — writes go through
+ * `LexifiPolicyConfig.setConfig`. `effectiveConfig` returns the config AFTER normalisation
+ * (`minLp` is clamped up to `minSwap`), so it is what the policy actually enforces;
+ * `validateConfig` reports whether the stored value needed that clamp.
+ */
+export declare const RegionalPolicyV3Abi: readonly [{
+    readonly type: "function";
+    readonly name: "checkAccess";
+    readonly inputs: readonly [{
+        readonly name: "poolId";
+        readonly type: "bytes32";
+    }, {
+        readonly name: "user";
+        readonly type: "address";
+    }, {
+        readonly name: "operation";
+        readonly type: "uint8";
+    }, {
+        readonly name: "amount";
+        readonly type: "uint256";
+    }];
+    readonly outputs: readonly [{
+        readonly type: "uint8";
+    }, {
+        readonly type: "string";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "minimumLevel";
+    readonly inputs: readonly [{
+        readonly name: "poolId";
+        readonly type: "bytes32";
+    }, {
+        readonly name: "operation";
+        readonly type: "uint8";
+    }];
+    readonly outputs: readonly [{
+        readonly type: "uint8";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "effectiveConfig";
+    readonly inputs: readonly [{
+        readonly name: "poolId";
+        readonly type: "bytes32";
+    }];
+    readonly outputs: readonly [{
+        readonly type: "tuple";
+        readonly components: readonly [{
+            readonly name: "requireCountryAttestation";
+            readonly type: "bool";
+        }, {
+            readonly name: "requireAccountAttestation";
+            readonly type: "bool";
+        }, {
+            readonly name: "minimumSwapLevel";
+            readonly type: "uint8";
+        }, {
+            readonly name: "minimumLpLevel";
+            readonly type: "uint8";
+        }, {
+            readonly name: "active";
+            readonly type: "bool";
+        }];
+    }, {
+        readonly name: "configured";
+        readonly type: "bool";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "validateConfig";
+    readonly inputs: readonly [{
+        readonly name: "poolId";
+        readonly type: "bytes32";
+    }];
+    readonly outputs: readonly [{
+        readonly type: "bool";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "encodeConfig";
+    readonly inputs: readonly [{
+        readonly name: "requireCountry";
+        readonly type: "bool";
+    }, {
+        readonly name: "requireAccount";
+        readonly type: "bool";
+    }, {
+        readonly name: "minSwap";
+        readonly type: "uint8";
+    }, {
+        readonly name: "minLp";
+        readonly type: "uint8";
+    }];
+    readonly outputs: readonly [{
+        readonly type: "bytes";
+    }];
+    readonly stateMutability: "pure";
+}, {
+    readonly type: "function";
+    readonly name: "CONFIG_FAMILY";
+    readonly inputs: readonly [];
+    readonly outputs: readonly [{
+        readonly type: "bytes32";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "configRegistry";
+    readonly inputs: readonly [];
+    readonly outputs: readonly [{
+        readonly type: "address";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "policyName";
+    readonly inputs: readonly [];
+    readonly outputs: readonly [{
+        readonly type: "string";
+    }];
+    readonly stateMutability: "pure";
+}, {
+    readonly type: "function";
+    readonly name: "policyVersion";
+    readonly inputs: readonly [];
+    readonly outputs: readonly [{
+        readonly type: "uint256";
+    }];
+    readonly stateMutability: "pure";
+}];
+/** `InstitutionalPolicyV3`. Writes go through `LexifiPolicyConfig.setConfig`. */
+export declare const InstitutionalPolicyV3Abi: readonly [{
+    readonly type: "function";
+    readonly name: "checkAccess";
+    readonly inputs: readonly [{
+        readonly name: "poolId";
+        readonly type: "bytes32";
+    }, {
+        readonly name: "user";
+        readonly type: "address";
+    }, {
+        readonly name: "operation";
+        readonly type: "uint8";
+    }, {
+        readonly name: "amount";
+        readonly type: "uint256";
+    }];
+    readonly outputs: readonly [{
+        readonly type: "uint8";
+    }, {
+        readonly type: "string";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "minimumLevel";
+    readonly inputs: readonly [{
+        readonly name: "poolId";
+        readonly type: "bytes32";
+    }, {
+        readonly name: "operation";
+        readonly type: "uint8";
+    }];
+    readonly outputs: readonly [{
+        readonly type: "uint8";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "effectiveConfig";
+    readonly inputs: readonly [{
+        readonly name: "poolId";
+        readonly type: "bytes32";
+    }];
+    readonly outputs: readonly [{
+        readonly type: "tuple";
+        readonly components: readonly [{
+            readonly name: "requiredProviders";
+            readonly type: "address[]";
+        }, {
+            readonly name: "minimumProviders";
+            readonly type: "uint256";
+        }, {
+            readonly name: "minimumTier";
+            readonly type: "uint8";
+        }, {
+            readonly name: "active";
+            readonly type: "bool";
+        }];
+    }, {
+        readonly name: "configured";
+        readonly type: "bool";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "encodeConfig";
+    readonly inputs: readonly [{
+        readonly name: "providers";
+        readonly type: "address[]";
+    }, {
+        readonly name: "minProviders";
+        readonly type: "uint256";
+    }, {
+        readonly name: "minTier";
+        readonly type: "uint8";
+    }];
+    readonly outputs: readonly [{
+        readonly type: "bytes";
+    }];
+    readonly stateMutability: "pure";
+}, {
+    readonly type: "function";
+    readonly name: "CONFIG_FAMILY";
+    readonly inputs: readonly [];
+    readonly outputs: readonly [{
+        readonly type: "bytes32";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "configRegistry";
+    readonly inputs: readonly [];
+    readonly outputs: readonly [{
+        readonly type: "address";
+    }];
+    readonly stateMutability: "view";
+}, {
+    readonly type: "function";
+    readonly name: "policyName";
+    readonly inputs: readonly [];
+    readonly outputs: readonly [{
+        readonly type: "string";
+    }];
+    readonly stateMutability: "pure";
+}, {
+    readonly type: "function";
+    readonly name: "policyVersion";
+    readonly inputs: readonly [];
+    readonly outputs: readonly [{
+        readonly type: "uint256";
+    }];
+    readonly stateMutability: "pure";
+}];
 //# sourceMappingURL=abis.d.ts.map

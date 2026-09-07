@@ -6,10 +6,17 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import {
   HOOK_ABI,
   THRESHOLD_POLICY_ABI,
-  REGIONAL_POLICY_ABI,
-  INSTITUTIONAL_POLICY_ABI,
+  REGIONAL_POLICY_V3_ABI,
+  INSTITUTIONAL_POLICY_V3_ABI,
+  POLICY_CONFIG_ABI,
 } from "@/config/abi";
-import { getDeployment, TIERS } from "@/config/contracts";
+import {
+  getDeployment,
+  TIERS,
+  ConfigFamily,
+  encodeRegionalConfig,
+  encodeInstitutionalConfig,
+} from "@/config/contracts";
 import { encodeAbiParameters, keccak256 } from "viem";
 
 const LEVEL_OPTIONS = TIERS.map((t, i) => ({ value: i, label: t.label }));
@@ -108,18 +115,21 @@ export default function PoolsPage() {
     query: { enabled: !!poolId && selectedPolicy === "threshold" },
   });
 
+  // v3 reads the EFFECTIVE config — i.e. after the policy normalises what the registry holds
+  // (minLp clamped up to minSwap, quorum clamped to the provider count). This is what is
+  // actually enforced, which may be stricter than what was written.
   const { data: regionalConfig, refetch: refetchRegional } = useReadContract({
     address: d.regionalPolicy,
-    abi: REGIONAL_POLICY_ABI,
-    functionName: "regionConfigs",
+    abi: REGIONAL_POLICY_V3_ABI,
+    functionName: "effectiveConfig",
     args: poolId ? [poolId] : undefined,
     query: { enabled: !!poolId && selectedPolicy === "regional" },
   });
 
   const { data: institutionalConfig, refetch: refetchInstitutional } = useReadContract({
     address: d.institutionalPolicy,
-    abi: INSTITUTIONAL_POLICY_ABI,
-    functionName: "getConfig",
+    abi: INSTITUTIONAL_POLICY_V3_ABI,
+    functionName: "effectiveConfig",
     args: poolId ? [poolId] : undefined,
     query: { enabled: !!poolId && selectedPolicy === "institutional" },
   });
@@ -150,16 +160,21 @@ export default function PoolsPage() {
         ],
       });
     } else if (selectedPolicy === "regional") {
+      // v3 keeps no config of its own — writes go to the shared LexifiPolicyConfig registry,
+      // keyed by (family, poolId) so a future policy redeploy keeps reading the same config.
       configure.writeContract({
-        address: d.regionalPolicy,
-        abi: REGIONAL_POLICY_ABI,
-        functionName: "setRegionConfig",
+        address: d.policyConfig,
+        abi: POLICY_CONFIG_ABI,
+        functionName: "setConfig",
         args: [
+          ConfigFamily.regional,
           poolId,
-          requireCountry,
-          requireAccount,
-          parseInt(regSwapMin),
-          parseInt(regLpMin),
+          encodeRegionalConfig({
+            requireCountryAttestation: requireCountry,
+            requireAccountAttestation: requireAccount,
+            minimumSwapLevel: parseInt(regSwapMin),
+            minimumLpLevel: parseInt(regLpMin),
+          }),
         ],
       });
     } else {
@@ -168,10 +183,18 @@ export default function PoolsPage() {
         .map((p) => p.trim())
         .filter(Boolean) as `0x${string}`[];
       configure.writeContract({
-        address: d.institutionalPolicy,
-        abi: INSTITUTIONAL_POLICY_ABI,
-        functionName: "setInstitutionalConfig",
-        args: [poolId, providerList, BigInt(minProviders), parseInt(minTier)],
+        address: d.policyConfig,
+        abi: POLICY_CONFIG_ABI,
+        functionName: "setConfig",
+        args: [
+          ConfigFamily.institutional,
+          poolId,
+          encodeInstitutionalConfig({
+            requiredProviders: providerList,
+            minimumProviders: BigInt(minProviders),
+            minimumTier: parseInt(minTier),
+          }),
+        ],
       });
     }
   };

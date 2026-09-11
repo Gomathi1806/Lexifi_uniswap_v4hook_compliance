@@ -1,57 +1,75 @@
-# Lexifi — DEX Operator Dashboard
+# Lexifi — Operator Dashboard
 
-Compliance management dashboard for Uniswap v4 pool operators.
+Next.js dashboard for Uniswap v4 pool operators using Lexifi. Live at
+[lexifiio.vercel.app](https://lexifiio.vercel.app).
 
-## Setup
+This repository is the web app only. The contracts live in
+[lexifi-contracts](https://github.com/Gomathi1806/lexifi-contracts).
+
+## Run locally
 
 ```bash
-npm install
-cp .env.example .env.local
-# Edit .env.local with your WalletConnect project ID
-npm run dev
+npm ci
+cp .env.example .env.local   # add a WalletConnect project ID
+npm run dev                  # http://localhost:3000
 ```
 
-Open http://localhost:3000
+`npm run build` produces the production build. Without a WalletConnect project ID the app
+still builds and reads chain data; only wallet connection needs the ID.
 
 ## Pages
 
-- **Overview** — Stats, deployed contracts, tier reference
-- **Pools** — Register compliance policies on pools, configure policy parameters, lookup pool info
-- **Checker** — Check any wallet's compliance for a specific pool, across all providers
-- **Audit** — On-chain audit trail: passes from event logs, denials reconstructed from
-  reverted transactions via Blockscout. No wallet connection required.
-- **Settings** — Admin: approve/revoke policies, configure thresholds
+- **Overview**: stats, deployed contracts, tier reference
+- **Pools**: register a policy on a pool, write its configuration, look up pool info
+- **Checker**: check any wallet's compliance for a pool, across every provider
+- **Audit**: the on-chain audit trail. Passes come from event logs; denials are reconstructed
+  from reverted transactions through Blockscout. No wallet needed.
+- **Settings**: owner actions, such as approving or revoking policies
 
-## Deployed Contracts (Base Mainnet, chainId 8453)
+## Where addresses and ABIs come from
 
-Addresses are imported from `@lexifi/sdk` (`lexifi-sdk/src/addresses.ts`) — that file is the
-single source of truth. This table is a copy for readers; verified against Base mainnet
-on 2026-09-07.
+Everything is imported from `@lexifi/sdk`. The SDK is vendored as a copy in `lexifi-sdk/`,
+compiled output included, and installed as `file:./lexifi-sdk`. Vercel builds from that copy
+(a path outside the project does not resolve there), so updating the SDK means copying a new
+build into `lexifi-sdk/` and committing it, `dist/` included.
+
+Current copy: `@lexifi/sdk` 2.0.0.
+
+## Deployed contracts (Base mainnet, chainId 8453)
+
+A copy for readers. The source of truth is `lexifi-sdk/src/addresses.ts`. Confirmed on-chain
+2026-09-11.
 
 | Contract | Address |
 |---|---|
 | LexifiHook | [`0xfE92DE69d2dDdcAc2f864C4cF84e8aD5E17D2880`](https://basescan.org/address/0xfE92DE69d2dDdcAc2f864C4cF84e8aD5E17D2880) |
+| LexifiPolicyConfig | [`0x9E005c201AEe5Db3c67b3658Cc18723dfDEe42E1`](https://basescan.org/address/0x9E005c201AEe5Db3c67b3658Cc18723dfDEe42E1) |
+| RegionalPolicyV3 | [`0x5309C741094e8901f9D2Ad1f31DC560006542a82`](https://basescan.org/address/0x5309C741094e8901f9D2Ad1f31DC560006542a82) |
+| InstitutionalPolicyV3 | [`0xdA93C63212CF41dB3680319B3839f254aC319177`](https://basescan.org/address/0xdA93C63212CF41dB3680319B3839f254aC319177) |
+| ThresholdPolicy | [`0x75f4913F53B694fDda95E49456D163Ca7AEf4199`](https://basescan.org/address/0x75f4913F53B694fDda95E49456D163Ca7AEf4199) |
 | CoinbaseEASProvider | [`0xb5DEC225A104A276671A765aba3890EC88A2ca27`](https://basescan.org/address/0xb5DEC225A104A276671A765aba3890EC88A2ca27) |
 | SelfAttestationProvider | [`0x344E4917360F5b44680D097c5E4904Ac62c00483`](https://basescan.org/address/0x344E4917360F5b44680D097c5E4904Ac62c00483) |
-| ThresholdPolicy | [`0x75f4913F53B694fDda95E49456D163Ca7AEf4199`](https://basescan.org/address/0x75f4913F53B694fDda95E49456D163Ca7AEf4199) |
-| RegionalPolicy | [`0xA99A89Cd5A61e975fB11047D3ed455fCCad9A44F`](https://basescan.org/address/0xA99A89Cd5A61e975fB11047D3ed455fCCad9A44F) |
-| InstitutionalPolicy | [`0xaD09fc63080736b1dFC4048F3589C481225db5fb`](https://basescan.org/address/0xaD09fc63080736b1dFC4048F3589C481225db5fb) |
-| LexifiComplianceAdapter | [`0xe59fB4347Ca17aA94BBd62eBb9921877b06B68eE`](https://basescan.org/address/0xe59fB4347Ca17aA94BBd62eBb9921877b06B68eE) |
+| LexifiComplianceAdapter | [`0xE59FB4347CA17Aa94BBD62eBB9921877B06b68eE`](https://basescan.org/address/0xE59FB4347CA17Aa94BBD62eBB9921877B06b68eE) |
 | LexifiAllowlistChecker | [`0x3882cD541634b99DabB5443Dc0DC67Ba4eDe94bc`](https://basescan.org/address/0x3882cD541634b99DabB5443Dc0DC67Ba4eDe94bc) |
 
-All verified on BaseScan. Owner of every contract: Safe
-[`0x17ae269e27524E82F29ca76Cb39A151A90a34B7e`](https://app.safe.global/base:0x17ae269e27524E82F29ca76Cb39A151A90a34B7e)
-(1-of-1 on Base). Owner-only calls go through Safe TX Builder.
+Owner, where a contract has one: Safe
+[`0x17ae269e27524E82F29ca76Cb39A151A90a34B7e`](https://app.safe.global/base:0x17ae269e27524E82F29ca76Cb39A151A90a34B7e).
+Retired addresses, and why each was retired, are listed in the
+[contracts README](https://github.com/Gomathi1806/lexifi-contracts#retired--do-not-use).
 
-### Deprecated — do not use
+Base Sepolia is partial and older than mainnet; see `lexifi-sdk/src/addresses.ts`.
 
-| Generation | Addresses | Why |
-|---|---|---|
-| v1 | hook `0xb8ab…2880`, provider `0x9Da4…E1d7`, threshold `0x1074…2259`, regional `0x5568…F029`, institutional `0x3120…fC30`, zkPass `0x929E…b646` | Owner key `0x22bc…a621` compromised. The v1 `CoinbaseEASProvider` also had EAS `recipient`/`attester` swapped, so every verification silently returned tier 0. |
-| v2 | hook `0x67a9…2880`, provider `0xF701…A7ea`, threshold `0x0b37…b74b`, regional `0xcF06…d6e2`, institutional `0xbe8a…88d5` | Owner was a Coinbase Smart Wallet that BaseScan's Write Contract tab cannot drive (`maxPriorityFeePerGas cannot be null`). Orphaned on-chain. |
+## Deploying
 
-## Base Sepolia
+Git auto-deploy is off (`vercel.json`), so pushing does not update the site. Deploy with the
+Vercel CLI from this directory: `vercel --prod`.
 
-Partial and older than mainnet — `regionalPolicy`, `selfAttestationProvider`,
-`complianceAdapter` and `allowlistChecker` are `NOT_DEPLOYED`. See
-`lexifi-sdk/src/addresses.ts`.
+## Repository layout
+
+| Path | Contents |
+|---|---|
+| `src/app/` | The five pages |
+| `src/components/` | App shell, navigation, wallet providers |
+| `src/config/` | wagmi config and re-exports from the SDK |
+| `lexifi-sdk/` | Vendored `@lexifi/sdk` build |
+| `archive/v1-prototype/` | The original v1 Solidity prototype, retired and kept for history. Read its README before opening anything in it. |

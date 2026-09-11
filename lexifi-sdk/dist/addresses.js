@@ -13,7 +13,7 @@ export const base = {
     regionalPolicy: "0x5309C741094e8901f9D2Ad1f31DC560006542a82",
     institutionalPolicy: "0xdA93C63212CF41dB3680319B3839f254aC319177",
     selfAttestationProvider: "0x344E4917360F5b44680D097c5E4904Ac62c00483",
-    complianceAdapter: "0xe59fB4347Ca17aA94BBd62eBb9921877b06B68eE",
+    complianceAdapter: "0xE59FB4347CA17Aa94BBD62eBB9921877B06b68eE",
     allowlistChecker: "0x3882cD541634b99DabB5443Dc0DC67Ba4eDe94bc",
     policyConfig: "0x9E005c201AEe5Db3c67b3658Cc18723dfDEe42E1",
     poolManager: "0x498581fF718922c3f8e6A244956aF099B2652b2b",
@@ -31,7 +31,7 @@ export const baseSepolia = {
     complianceAdapter: NOT_DEPLOYED,
     allowlistChecker: NOT_DEPLOYED,
     policyConfig: NOT_DEPLOYED,
-    poolManager: "0x05E73354cFDd6745C338b50BDB65F6c2F4163313",
+    poolManager: "0x05E73354cfDd6745c338B50bDb65F6C2F4163313",
     explorer: "https://sepolia.basescan.org",
     blockscoutApi: "https://base-sepolia.blockscout.com/api/v2",
 };

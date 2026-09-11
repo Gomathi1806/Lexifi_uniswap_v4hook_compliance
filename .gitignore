@@ -2,7 +2,6 @@ node_modules/
 .next/
 .env
 .env.local
-.env.example
 .npmrc
 *.tsbuildinfo
 next-env.d.ts
@@ -10,9 +9,4 @@ next-env.d.ts
 .claude/
 .vscode/
 .idea/
-foundry-fixed.toml
-out/
-cache/
-broadcast/
-deployment/
 .vercel

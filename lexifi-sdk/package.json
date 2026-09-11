@@ -1,7 +1,7 @@
 {
   "name": "@lexifi/sdk",
-  "version": "0.3.0",
-  "description": "TypeScript SDK for Lexifi \u2014 pool-level compliance infrastructure for Uniswap V4",
+  "version": "2.0.0",
+  "description": "TypeScript SDK for Lexifi — pool-level compliance infrastructure for Uniswap V4",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -13,11 +13,15 @@
   },
   "files": [
     "dist",
-    "src"
+    "src",
+    "README.md",
+    "LICENSE"
   ],
+  "sideEffects": false,
   "scripts": {
     "build": "tsc",
-    "prepublishOnly": "npm run build"
+    "test": "npm run build && node --test test/*.test.mjs",
+    "prepublishOnly": "npm test"
   },
   "keywords": [
     "lexifi",
@@ -30,6 +34,20 @@
   ],
   "author": "Lexifi",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gomathi1806/lexifi-sdk.git"
+  },
+  "homepage": "https://lexifiio.vercel.app",
+  "bugs": {
+    "url": "https://github.com/Gomathi1806/lexifi-sdk/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "peerDependencies": {
     "viem": ">=2.0.0"
   },

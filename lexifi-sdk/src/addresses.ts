@@ -73,8 +73,37 @@ export const baseSepolia: LexifiDeployment = {
   blockscoutApi: "https://base-sepolia.blockscout.com/api/v2",
 };
 
+
+/**
+ * Robinhood Chain (2026-09-23). Coinbase Verifications do not exist here: the EAS predeploy,
+ * the Coinbase indexer and the Coinbase attester all have no code on this chain, so
+ * `CoinbaseEASProvider` would deny every address. Identity comes from
+ * `selfAttestationProvider`, where the operator records its own KYC results on-chain.
+ *
+ * `complianceAdapter` and `allowlistChecker` are not deployed here yet.
+ */
+export const robinhood: LexifiDeployment = {
+  chainId: 4663,
+  hook: "0x0B0400B268045Aa7E3B3ca18c1e1774f6C076880",
+  coinbaseProvider: NOT_DEPLOYED,
+  thresholdPolicy: "0xBaa8ba3000Ee1087B0B52937078F4D4f146dF28C",
+  regionalPolicy: "0xe1051391f608D0EeBE9FCF57DB96e087c7fd9cBD",
+  // Deployed in the first pass with an owner that has no code on this chain, then replaced.
+  // The orphans (provider 0x2249321F..., regional 0x1FC8439b..., institutional 0xAca9972d...,
+  // threshold 0x836A0A17...) remain on-chain and must not be used.
+  institutionalPolicy: NOT_DEPLOYED,
+  selfAttestationProvider: "0xC9F31Cb33BEC349691E11A6C62B1428C3c7C201B",
+  complianceAdapter: NOT_DEPLOYED,
+  allowlistChecker: NOT_DEPLOYED,
+  policyConfig: "0xF9f0d91100C86Acb6b6A56F17014CF03A53a028b",
+  poolManager: "0x8366a39CC670B4001A1121B8F6A443A643e40951",
+  explorer: "https://robinhoodchain.blockscout.com",
+  blockscoutApi: "https://robinhoodchain.blockscout.com/api/v2",
+};
+
 export function getDeployment(chainId: number): LexifiDeployment {
   if (chainId === 84532) return baseSepolia;
+  if (chainId === 4663) return robinhood;
   return base;
 }
 

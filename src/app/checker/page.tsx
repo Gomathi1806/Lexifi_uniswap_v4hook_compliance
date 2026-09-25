@@ -15,12 +15,31 @@ export default function CheckerPage() {
 
   const hasSelfAttest = d.selfAttestationProvider !== ZERO_ADDR;
 
+  // Default to the live pool on whichever chain the wallet is on: WETH/USDC on Base,
+  // native ETH/USDG on Robinhood Chain, where Coinbase Verifications do not exist.
+  const defaults =
+    chainId === 4663
+      ? { t0: ZERO_ADDR, t1: "0x5fc5360D0400a0Fd4f2af552ADD042D716F1d168", amt: "1" }
+      : {
+          t0: "0x4200000000000000000000000000000000000006",
+          t1: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+          amt: "1000",
+        };
+
   const [walletAddr, setWalletAddr] = useState("");
-  const [token0, setToken0] = useState("0x4200000000000000000000000000000000000006");
-  const [token1, setToken1] = useState("0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913");
-  const [amount, setAmount] = useState("1000");
+  const [token0, setToken0] = useState(defaults.t0);
+  const [token1, setToken1] = useState(defaults.t1);
+  const [amount, setAmount] = useState(defaults.amt);
   const [operation, setOperation] = useState("0");
   const [submitted, setSubmitted] = useState(false);
+  const [lastChain, setLastChain] = useState(chainId);
+  if (chainId !== lastChain) {
+    setLastChain(chainId);
+    setToken0(defaults.t0);
+    setToken1(defaults.t1);
+    setAmount(defaults.amt);
+    setSubmitted(false);
+  }
 
   const poolKey = {
     currency0: token0 as `0x${string}`,

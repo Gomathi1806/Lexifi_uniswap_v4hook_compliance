@@ -36,6 +36,15 @@ export interface LexifiDeployment {
 export declare const NOT_DEPLOYED: "0x0000000000000000000000000000000000000000";
 export declare const base: LexifiDeployment;
 export declare const baseSepolia: LexifiDeployment;
+/**
+ * Robinhood Chain (2026-09-23). Coinbase Verifications do not exist here: the EAS predeploy,
+ * the Coinbase indexer and the Coinbase attester all have no code on this chain, so
+ * `CoinbaseEASProvider` would deny every address. Identity comes from
+ * `selfAttestationProvider`, where the operator records its own KYC results on-chain.
+ *
+ * `complianceAdapter` and `allowlistChecker` are not deployed here yet.
+ */
+export declare const robinhood: LexifiDeployment;
 export declare function getDeployment(chainId: number): LexifiDeployment;
 /**
  * Config-family keys for `LexifiPolicyConfig`. These are `keccak256` of a fixed string and are

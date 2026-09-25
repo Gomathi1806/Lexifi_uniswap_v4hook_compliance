@@ -14,6 +14,7 @@ export {
 export {
   base,
   baseSepolia,
+  robinhood,
   getDeployment,
   NOT_DEPLOYED,
   type LexifiDeployment,

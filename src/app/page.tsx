@@ -5,6 +5,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { HOOK_ABI, PROVIDER_ABI } from "@/config/abi";
 import { getDeployment, TIERS, POLICIES } from "@/config/contracts";
 import Link from "next/link";
+import { LexifiMark } from "@/components/LexifiMark";
 
 export default function Home() {
   const { isConnected, address } = useAccount();
@@ -22,7 +23,7 @@ export default function Home() {
   if (!isConnected) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
-        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-lex-cyan/20 to-lex-violet/20 font-mono text-2xl text-lex-cyan">L</div>
+        <LexifiMark size={64} className="mb-5" />
         <h1 className="mb-2 font-display text-2xl font-bold text-slate-100">Lexifi Operator Dashboard</h1>
         <p className="mb-6 max-w-md text-sm text-slate-500">Pool-level compliance infrastructure for Uniswap V4. Connect your wallet to manage policies, check compliance, and monitor pools.</p>
         <ConnectButton />

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useReadContract, useChainId } from "wagmi";
 import { HOOK_ABI } from "@/config/abi";
 import { getDeployment } from "@/config/contracts";
+import { LexifiMark } from "./LexifiMark";
 
 const NAV = [
   { href: "/", label: "Overview", icon: "◈" },
@@ -33,8 +34,8 @@ export function Nav() {
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2.5 no-underline">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-gradient-to-br from-lex-cyan to-cyan-600 font-mono text-xs font-bold text-base-0">L</div>
-            <span className="text-sm font-bold tracking-tight text-slate-100">Lexifi</span>
+            <LexifiMark size={26} />
+            <span className="font-display text-base font-semibold tracking-tight text-slate-100">Lexifi</span>
             <span className="rounded bg-lex-cyan/10 px-1.5 py-0.5 font-mono text-[9px] font-medium text-lex-cyan">OPERATOR</span>
           </Link>
           <nav className="hidden items-center gap-0.5 md:flex">

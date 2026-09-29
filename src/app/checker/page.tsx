@@ -7,6 +7,7 @@ import { HOOK_ABI, PROVIDER_ABI, SELF_ATTESTATION_ABI } from "@/config/abi";
 import { getDeployment, TIERS } from "@/config/contracts";
 
 const ZERO_ADDR = "0x0000000000000000000000000000000000000000";
+const TICK_SPACING: Record<number, number> = { 500: 10, 3000: 60, 10000: 200 };
 
 export default function CheckerPage() {
   const { isConnected } = useAccount();
@@ -31,6 +32,7 @@ export default function CheckerPage() {
   const [token1, setToken1] = useState(defaults.t1);
   const [amount, setAmount] = useState(defaults.amt);
   const [operation, setOperation] = useState("0");
+  const [fee, setFee] = useState(3000);
   const [submitted, setSubmitted] = useState(false);
   const [lastChain, setLastChain] = useState(chainId);
   if (chainId !== lastChain) {
@@ -44,8 +46,8 @@ export default function CheckerPage() {
   const poolKey = {
     currency0: token0 as `0x${string}`,
     currency1: token1 as `0x${string}`,
-    fee: 3000,
-    tickSpacing: 60,
+    fee,
+    tickSpacing: TICK_SPACING[fee],
     hooks: d.hook,
   };
 
@@ -132,8 +134,16 @@ export default function CheckerPage() {
               />
             </div>
             <div>
-              <label className="mb-1 block text-[10px] uppercase tracking-widest text-slate-600">Pool Tokens</label>
-              <div className="rounded-lg border border-white/[0.06] bg-base-0 px-3 py-2.5 font-mono text-[10px] text-slate-500">WETH / USDC</div>
+              <label className="mb-1 block text-[10px] uppercase tracking-widest text-slate-600">Pool: {chainId === 4663 ? "ETH / USDG" : "WETH / USDC"}</label>
+              <select
+                value={fee}
+                onChange={(e) => { setFee(parseInt(e.target.value)); setSubmitted(false); }}
+                className="w-full rounded-lg border border-white/[0.06] bg-base-0 px-3 py-2.5 text-xs text-slate-300 outline-none"
+              >
+                <option value={500}>0.05% fee</option>
+                <option value={3000}>0.30% fee</option>
+                <option value={10000}>1.00% fee</option>
+              </select>
             </div>
           </div>
         </div>

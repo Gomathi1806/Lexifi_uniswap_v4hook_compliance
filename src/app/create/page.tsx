@@ -365,7 +365,7 @@ export default function CreatePoolPage() {
         {!allDone && (
           <button onClick={run} disabled={busy || !derived?.sqrt || !!taken}
             className="mt-4 w-full rounded-lg bg-gradient-to-r from-lex-cyan to-cyan-600 py-3 text-sm font-bold text-base-0 transition-opacity hover:opacity-90 disabled:opacity-40">
-            {busy ? "Working…" : steps.some((s) => s === "error") ? "Retry" : "Create pool"}
+            {busy ? "Working…" : taken ? "Pick another fee tier" : steps.some((s) => s === "error") ? "Retry" : "Create pool"}
           </button>
         )}
         {error && <p className="mt-2 rounded-lg bg-lex-red/10 px-3 py-2 text-xs text-lex-red">{error}</p>}
